@@ -1,0 +1,69 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!78 &1
+TagManager:
+  serializedVersion: 2
+  tags:
+  - Box
+  - Goal
+  layers:
+  - Default
+  - TransparentFX
+  - Ignore Raycast
+  - 
+  - Water
+  - UI
+  - Background
+  - Water
+  - Wall
+  - Ground
+  - Vatlinhtinh
+  - Player
+  - Box
+  - Harzard
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  m_SortingLayers:
+  - name: Default
+    uniqueID: 0
+    locked: 0
+  - name: Background
+    uniqueID: 3237450327
+    locked: 0
+  - name: Water
+    uniqueID: 2333052465
+    locked: 0
+  - name: Ground
+    uniqueID: 2493142889
+    locked: 0
+  - name: Vatlinhtinh
+    uniqueID: 1458576417
+    locked: 0
+  - name: Harzard
+    uniqueID: 399030075
+    locked: 0
+  - name: Box
+    uniqueID: 935714635
+    locked: 0
+  - name: Wall
+    uniqueID: 2490415123
+    locked: 0
+  - name: Player
+    uniqueID: 1035594765
+    locked: 0

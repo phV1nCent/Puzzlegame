@@ -14,6 +14,7 @@ public class GameManager : MonoBehaviour
         if (Instance == null)
         {
             Instance = this;
+            DontDestroyOnLoad(gameObject);
         }
         else
         {
@@ -38,7 +39,7 @@ public class GameManager : MonoBehaviour
         if (boxesOnGoal == totalGoals)  // Số box đặt đúng vị trí trên goal bằng tổng sô goal
         {
             Debug.Log("Level Complete!");
-            Invoke("LoadNextLevel", 1f); // Qua màn
+            Invoke("LoadNextLevel", 1f); 
         }
     }
 

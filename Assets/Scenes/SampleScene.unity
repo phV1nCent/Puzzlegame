@@ -2606,12 +2606,16 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 1406699949322025300, guid: 1afa58a6924745f4ba9dfd0d76234dbc, type: 3}
+      propertyPath: m_BodyType
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1406699949322025300, guid: 1afa58a6924745f4ba9dfd0d76234dbc, type: 3}
       propertyPath: m_Material
       value: 
-      objectReference: {fileID: 6200000, guid: f827eef189aea1c4c91a0c90dbc1d6d7, type: 2}
+      objectReference: {fileID: 0}
     - target: {fileID: 1406699949322025300, guid: 1afa58a6924745f4ba9dfd0d76234dbc, type: 3}
       propertyPath: m_LinearDrag
-      value: 1000000
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 1406699949322025300, guid: 1afa58a6924745f4ba9dfd0d76234dbc, type: 3}
       propertyPath: m_AngularDrag

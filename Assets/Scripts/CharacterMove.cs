@@ -13,7 +13,7 @@ public class Play : MonoBehaviour
     [SerializeField] private Tilemap waterTilemap;
     [SerializeField] private Tilemap groundTilemap;
     private bool isPushing = false;
-    private Vector2 velocity;
+    private Rigidbody2D boxRb;
 
     void Start()
     {
@@ -32,67 +32,72 @@ public class Play : MonoBehaviour
         playMove = Vector2.zero;
         playMove.x = Input.GetAxisRaw("Horizontal");
         playMove.y = Input.GetAxisRaw("Vertical");
-             
-    }    
+
+    }
     void FixedUpdate()
-{
-    Vector2 nextPosition = rb.position + playMove.normalized * moveSpeed * Time.fixedDeltaTime;
-
-    Vector3Int gridPositionWater = waterTilemap.WorldToCell(nextPosition);
-    Vector3Int gridPositionGround = groundTilemap.WorldToCell(nextPosition);
-
-    bool isGroundTile = groundTilemap.HasTile(gridPositionGround);
-    bool isWaterTile = waterTilemap.HasTile(gridPositionWater);
-
-    if (isGroundTile || (isGroundTile && isWaterTile))
     {
-        rb.velocity = playMove.normalized * moveSpeed;
+
+        Debug.Log("Cell Size: " + groundTilemap.cellSize);
+        Vector2 nextPosition = rb.position + playMove.normalized * moveSpeed * Time.fixedDeltaTime;
+        Vector3Int gridPositionWater = waterTilemap.WorldToCell(nextPosition);
+        Vector3Int gridPositionGround = groundTilemap.WorldToCell(nextPosition);
+
+        bool isGroundTile = groundTilemap.HasTile(gridPositionGround);
+        bool isWaterTile = waterTilemap.HasTile(gridPositionWater);
+
+        if (isGroundTile || (isGroundTile && isWaterTile))
+        {
+            // Kiểm tra box phía trước
+            RaycastHit2D hit = Physics2D.Raycast(rb.position, playMove.normalized, moveSpeed * Time.fixedDeltaTime);
+            
+            if (hit.collider != null && hit.collider.CompareTag("Box"))
+            {
+                boxRb = hit.collider.GetComponent<Rigidbody2D>();
+                if (boxRb != null)
+                {
+                    // Kiểm tra xem phía trước box có vật cản không     
+                    Vector2 boxNextPosition = boxRb.position + playMove.normalized * groundTilemap.cellSize.x;               
+                    RaycastHit2D boxHit = Physics2D.Raycast(boxRb.position,playMove.normalized ,groundTilemap.cellSize.x);
+                    
+                    if (boxHit.collider == null)
+                    {
+                        // Di chuyển box
+                        boxRb.MovePosition(boxNextPosition);
+                        // Di chuyển player
+                        rb.velocity = playMove.normalized * moveSpeed;
+                    }
+                    else
+                    {
+                        rb.velocity = Vector2.zero;
+                    }
+                }
+            }
+            else
+            {
+                rb.velocity = playMove.normalized * moveSpeed;
+            }
+        }
+        else
+        {
+            rb.velocity = Vector2.zero;
+        }
     }
-    else
+
+    void UpdateAnimation()
     {
-        rb.velocity = Vector2.zero;
+        // Kiểm tra xem nhân vật có đang di chuyển không
+        bool isMoving = playMove != Vector2.zero;
+
+        // Nếu nhân vật đang di chuyển, lưu hướng cuối cùng
+        if (isMoving)
+        {
+            lastMove = playMove;
+        }
+        playAnimator.SetFloat("Horizontal", lastMove.x);
+        playAnimator.SetFloat("Vertical", lastMove.y);
+        playAnimator.SetBool("isPushing", isPushing);
+        playAnimator.SetBool("isMoving", isMoving);
+
     }
-}
-void UpdateAnimation()
-{
-    // Kiểm tra xem nhân vật có đang di chuyển không
-    bool isMoving = playMove != Vector2.zero;
 
-    // Nếu nhân vật đang di chuyển, lưu hướng cuối cùng
-    if (isMoving)
-    {
-        lastMove = playMove;
-    }
-    playAnimator.SetFloat("Horizontal", lastMove.x);
-    playAnimator.SetFloat("Vertical", lastMove.y);
-    playAnimator.SetBool("isPushing", isPushing);
-    playAnimator.SetBool("isMoving", isMoving);
-
-}
-private void OnCollisionEnter2D(Collision2D collision)
-{
-    if (collision.gameObject.CompareTag("Box"))
-    {
-        if(isPushing)
-            return;
-        isPushing = true;
-
-        Rigidbody2D boxRb = collision.gameObject.GetComponent<Rigidbody2D>();
-
-        Vector2 pushDirection = playMove.normalized;
-        Vector2 newBoxPosition = (Vector2)collision.gameObject.transform.position + pushDirection;
-        Debug.Log(newBoxPosition);
-
-        // Di chuyển thùng theo grid (1 đơn vị mỗi lần)
-        boxRb.MovePosition(newBoxPosition);
-    }
-}
-private void OnCollisionExit2D(Collision2D collision)
-{
-    if (collision.gameObject.CompareTag("Box"))
-    {
-        isPushing = false;
-    }
-}  
-    
 }

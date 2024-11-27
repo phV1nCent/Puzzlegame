@@ -386,7 +386,7 @@ Rigidbody2D:
   m_LinearDrag: 0
   m_AngularDrag: 0.05
   m_GravityScale: 0
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 6200000, guid: f827eef189aea1c4c91a0c90dbc1d6d7, type: 2}
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0
@@ -2606,19 +2606,35 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 1406699949322025300, guid: 1afa58a6924745f4ba9dfd0d76234dbc, type: 3}
+      propertyPath: m_Mass
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1406699949322025300, guid: 1afa58a6924745f4ba9dfd0d76234dbc, type: 3}
       propertyPath: m_BodyType
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1406699949322025300, guid: 1afa58a6924745f4ba9dfd0d76234dbc, type: 3}
       propertyPath: m_Material
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 6200000, guid: f827eef189aea1c4c91a0c90dbc1d6d7, type: 2}
     - target: {fileID: 1406699949322025300, guid: 1afa58a6924745f4ba9dfd0d76234dbc, type: 3}
       propertyPath: m_LinearDrag
-      value: 10
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 1406699949322025300, guid: 1afa58a6924745f4ba9dfd0d76234dbc, type: 3}
       propertyPath: m_AngularDrag
+      value: 0.05
+      objectReference: {fileID: 0}
+    - target: {fileID: 1406699949322025300, guid: 1afa58a6924745f4ba9dfd0d76234dbc, type: 3}
+      propertyPath: m_Constraints
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1406699949322025300, guid: 1afa58a6924745f4ba9dfd0d76234dbc, type: 3}
+      propertyPath: m_GravityScale
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1406699949322025300, guid: 1afa58a6924745f4ba9dfd0d76234dbc, type: 3}
+      propertyPath: m_CollisionDetection
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4195500415779250804, guid: 1afa58a6924745f4ba9dfd0d76234dbc, type: 3}

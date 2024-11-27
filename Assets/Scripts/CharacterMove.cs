@@ -3,17 +3,19 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
-public class Play : MonoBehaviour
+public class CharacterMove : MonoBehaviour
 {
     public float moveSpeed = 5f;
     private Vector2 playMove;
     private Rigidbody2D rb;
     private Animator playAnimator;
-    private Vector2 lastMove = Vector2.zero; // Hướng cuối cùng
     [SerializeField] private Tilemap waterTilemap;
     [SerializeField] private Tilemap groundTilemap;
     private bool isPushing = false;
     private Rigidbody2D boxRb;
+    [SerializeField] private LayerMask boxLayer; // Layer dành cho box
+    [SerializeField] private LayerMask obstacleLayer; // Layer dành cho vật cản
+
 
     void Start()
     {
@@ -36,9 +38,15 @@ public class Play : MonoBehaviour
     }
     void FixedUpdate()
     {
+        if (isPushing)
+        {
+            rb.velocity = Vector2.zero;
+            return; // Dừng mọi hành động khác khi đang đẩy
+        }
 
-        Debug.Log("Cell Size: " + groundTilemap.cellSize);
         Vector2 nextPosition = rb.position + playMove.normalized * moveSpeed * Time.fixedDeltaTime;
+
+        // Kiểm tra tile hợp lệ
         Vector3Int gridPositionWater = waterTilemap.WorldToCell(nextPosition);
         Vector3Int gridPositionGround = groundTilemap.WorldToCell(nextPosition);
 
@@ -48,23 +56,19 @@ public class Play : MonoBehaviour
         if (isGroundTile || (isGroundTile && isWaterTile))
         {
             // Kiểm tra box phía trước
-            RaycastHit2D hit = Physics2D.Raycast(rb.position, playMove.normalized, moveSpeed * Time.fixedDeltaTime);
-            
-            if (hit.collider != null && hit.collider.CompareTag("Box"))
+            RaycastHit2D hit = Physics2D.Raycast(rb.position, playMove.normalized, 0.5f, boxLayer);
+            if (hit.collider != null)
             {
-                boxRb = hit.collider.GetComponent<Rigidbody2D>();
+                Rigidbody2D boxRb = hit.collider.GetComponent<Rigidbody2D>();
                 if (boxRb != null)
                 {
-                    // Kiểm tra xem phía trước box có vật cản không     
-                    Vector2 boxNextPosition = boxRb.position + playMove.normalized * groundTilemap.cellSize.x;               
-                    RaycastHit2D boxHit = Physics2D.Raycast(boxRb.position,playMove.normalized ,groundTilemap.cellSize.x);
-                    
-                    if (boxHit.collider == null)
+                    Vector2 boxNextPosition = boxRb.position + playMove.normalized * groundTilemap.cellSize.x;
+
+                    // Kiểm tra xem vị trí tiếp theo của box có vật cản không
+                    Collider2D obstacle = Physics2D.OverlapCircle(boxNextPosition, 0.1f, obstacleLayer);
+                    if (obstacle == null)
                     {
-                        // Di chuyển box
-                        boxRb.MovePosition(boxNextPosition);
-                        // Di chuyển player
-                        rb.velocity = playMove.normalized * moveSpeed;
+                        StartCoroutine(PushBox(boxRb, boxNextPosition));
                     }
                     else
                     {
@@ -74,20 +78,44 @@ public class Play : MonoBehaviour
             }
             else
             {
+                // Không va chạm với box, di chuyển bình thường
                 rb.velocity = playMove.normalized * moveSpeed;
             }
         }
         else
         {
+            // Nếu vị trí tiếp theo không hợp lệ, nhân vật dừng
             rb.velocity = Vector2.zero;
         }
     }
 
+    IEnumerator PushBox(Rigidbody2D boxRb, Vector2 targetPosition)
+    {
+        isPushing = true;
+        rb.velocity = Vector2.zero;
+
+        boxRb.velocity = Vector2.zero;
+        boxRb.angularVelocity = 0f;
+        boxRb.drag = 0f;
+
+        // Lấy vị trí ô hiện tại và ô tiếp theo của box
+        Vector3Int currentGridPos = groundTilemap.WorldToCell(boxRb.position);
+        Vector3Int targetGridPos = groundTilemap.WorldToCell(targetPosition);
+
+        // Lấy vị trí thế giới chính giữa của ô đích
+        Vector3 endWorldPos = groundTilemap.GetCellCenterWorld(targetGridPos);
+
+        // Di chuyển box đến đúng vị trí ô tiếp theo
+        boxRb.position = endWorldPos;
+
+        isPushing = false;
+        yield return null;
+    }
     void UpdateAnimation()
     {
         // Kiểm tra xem nhân vật có đang di chuyển không
         bool isMoving = playMove != Vector2.zero;
-
+        Vector2 lastMove = Vector2.zero;
         // Nếu nhân vật đang di chuyển, lưu hướng cuối cùng
         if (isMoving)
         {

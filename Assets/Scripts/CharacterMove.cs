@@ -95,16 +95,14 @@ public class CharacterMove : MonoBehaviour
         rb.velocity = Vector2.zero;
 
         boxRb.velocity = Vector2.zero;
-        boxRb.angularVelocity = 0f;
-        boxRb.drag = 0f;
 
         // Lấy vị trí ô hiện tại và ô tiếp theo của box
-        Vector3Int currentGridPos = groundTilemap.WorldToCell(boxRb.position);
         Vector3Int targetGridPos = groundTilemap.WorldToCell(targetPosition);
-
+        Debug.Log(" targetGrid" + targetGridPos);
         // Lấy vị trí thế giới chính giữa của ô đích
         Vector3 endWorldPos = groundTilemap.GetCellCenterWorld(targetGridPos);
 
+        boxRb.velocity = Vector2.zero;
         // Di chuyển box đến đúng vị trí ô tiếp theo
         boxRb.position = endWorldPos;
 

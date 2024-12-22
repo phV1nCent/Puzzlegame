@@ -22,7 +22,8 @@ public class GameManager : MonoBehaviour
         }
 
         boxes = FindObjectsOfType<Box>();   // Tìm box trong scene
-        totalGoals = GameObject.FindGameObjectsWithTag("Goal").Length; //Số goal trong scene gắn tag 
+        totalGoals = GameObject.FindGameObjectsWithTag("Goal").Length; //Số goal trong scene gắn tag
+        totalGoals += GameObject.FindGameObjectsWithTag("RedGoal").Length;
     }
 
     public void CheckWin()

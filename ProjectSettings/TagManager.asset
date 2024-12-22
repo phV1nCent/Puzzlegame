@@ -6,6 +6,7 @@ TagManager:
   tags:
   - Box
   - Goal
+  - RedGoal
   layers:
   - Default
   - TransparentFX

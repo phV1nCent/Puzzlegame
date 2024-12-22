@@ -11,6 +11,7 @@ public class CharacterMove : MonoBehaviour
     private Animator playAnimator;
     [SerializeField] private Tilemap waterTilemap;
     [SerializeField] private Tilemap groundTilemap;
+    [SerializeField] private Tilemap wallTilemap;
     private bool isPushing = false;
     private Rigidbody2D boxRb;
     [SerializeField] private LayerMask boxLayer; // Layer dành cho box
@@ -56,18 +57,21 @@ public class CharacterMove : MonoBehaviour
         if (isGroundTile || (isGroundTile && isWaterTile))
         {
             // Kiểm tra box phía trước
-            RaycastHit2D hit = Physics2D.Raycast(rb.position, playMove.normalized, 0.5f, boxLayer);
+            RaycastHit2D hit = Physics2D.Raycast(rb.position, playMove.normalized, 1f, boxLayer);
             if (hit.collider != null)
             {
+                Debug.Log("Check row - 63");
                 Rigidbody2D boxRb = hit.collider.GetComponent<Rigidbody2D>();
                 if (boxRb != null)
                 {
+                    Debug.Log("Check row - 67");
                     Vector2 boxNextPosition = boxRb.position + playMove.normalized * groundTilemap.cellSize.x;
 
                     // Kiểm tra xem vị trí tiếp theo của box có vật cản không
                     Collider2D obstacle = Physics2D.OverlapCircle(boxNextPosition, 0.1f, obstacleLayer);
                     if (obstacle == null)
                     {
+                        Debug.Log("Box next pos: " + boxNextPosition);
                         StartCoroutine(PushBox(boxRb, boxNextPosition));
                     }
                     else
@@ -76,7 +80,7 @@ public class CharacterMove : MonoBehaviour
                     }
                 }
             }
-            else
+            else 
             {
                 // Không va chạm với box, di chuyển bình thường
                 rb.velocity = playMove.normalized * moveSpeed;
@@ -102,12 +106,31 @@ public class CharacterMove : MonoBehaviour
         // Lấy vị trí thế giới chính giữa của ô đích
         Vector3 endWorldPos = groundTilemap.GetCellCenterWorld(targetGridPos);
 
-        boxRb.velocity = Vector2.zero;
-        // Di chuyển box đến đúng vị trí ô tiếp theo
-        boxRb.position = endWorldPos;
+        Vector3Int targetGridPosWall = wallTilemap.WorldToCell(targetPosition);
 
-        isPushing = false;
-        yield return null;
+        if (boxRb.gameObject.GetComponent<Box>().canMoveLeft == false && targetPosition.x < transform.position.x)
+        {
+            Debug.Log("Can't move left");
+            isPushing = false;
+            yield break;
+        }
+
+        if (wallTilemap.HasTile(targetGridPosWall))
+        {
+            Debug.Log("Wall enter");
+            isPushing = false;
+            yield return null;
+        }
+
+        else
+        {
+            boxRb.velocity = Vector2.zero;
+            // Di chuyển box đến đúng vị trí ô tiếp theo
+            boxRb.position = endWorldPos;
+
+            isPushing = false;
+            yield return null;
+        }
     }
     void UpdateAnimation()
     {
